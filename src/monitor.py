@@ -117,11 +117,8 @@ def main():
                         "footer": {"text": f"Nguồn: {post['author']}"}
                     }
                     
-                    # Image removal as requested by user
-                    # if post.get('images') and len(post['images']) > 0:
-                    #     embed["image"] = {"url": post['images'][0]}
-
                     send_discord_webhook(WEBHOOK_URL, embed=embed)
+                    
                     # Update local history
                     history[svc['history_key']] = post['timestamp']
                 

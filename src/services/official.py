@@ -95,19 +95,23 @@ class OfficialService:
                 ts = time.time()
                 if date_match:
                     try:
-                        # Parse date but set time to end of day (23:59:59) so it passes the last check 
-                        # for the whole day, OR better: use current time if the date matches today.
                         parsed_date = datetime.strptime(date_match.group(1), "%Y%m%d")
-                        current_date = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+                        base_ts = parsed_date.timestamp()
                         
-                        if parsed_date >= current_date:
-                            # If it's today's or future post, use current time to ensure it's "new"
-                            ts = time.time()
+                        # Extract a stable offset from the ID in the link to differentiate posts on the same day
+                        # Link pattern example: .../20260203/40412_1285159.html
+                        id_match = re.search(r'(\d+)\.html$', link)
+                        if id_match:
+                            # Use the ID as a second-offset (modulo one day) to keep it stable and readable
+                            # This ensures two posts on the same day have different but STABLE timestamps
+                            offset = int(id_match.group(1)) % 86400
+                            ts = base_ts + offset
                         else:
-                            # If it's an old post, use the date at 00:00:00
-                            ts = parsed_date.timestamp()
+                            ts = base_ts
                     except:
-                        pass
+                        ts = time.time() # Extreme fallback
+                else:
+                    ts = time.time()
                 
                 if ts > last_check_timestamp:
                     # Fetch full details
