@@ -95,7 +95,17 @@ class OfficialService:
                 ts = time.time()
                 if date_match:
                     try:
-                        ts = datetime.strptime(date_match.group(1), "%Y%m%d").timestamp()
+                        # Parse date but set time to end of day (23:59:59) so it passes the last check 
+                        # for the whole day, OR better: use current time if the date matches today.
+                        parsed_date = datetime.strptime(date_match.group(1), "%Y%m%d")
+                        current_date = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+                        
+                        if parsed_date >= current_date:
+                            # If it's today's or future post, use current time to ensure it's "new"
+                            ts = time.time()
+                        else:
+                            # If it's an old post, use the date at 00:00:00
+                            ts = parsed_date.timestamp()
                     except:
                         pass
                 

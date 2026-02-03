@@ -68,7 +68,8 @@ class GoogleNewsService:
 
                 entry_timestamp = time.mktime(entry.published_parsed)
                 
-                if entry_timestamp > last_check_timestamp:
+                # Use a small buffer (5 min) to handle RSS indexing latency
+                if entry_timestamp > (last_check_timestamp - 300):
                     content_details = self.get_post_content(entry.link)
                     
                     new_posts.append({

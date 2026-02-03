@@ -5,6 +5,7 @@ import requests
 from dotenv import load_dotenv
 from services.googlenews import GoogleNewsService
 from services.official import OfficialService
+from services.dashen import DashenService
 from services.translator import TranslationService
 from datetime import datetime
 
@@ -71,6 +72,12 @@ def main():
             "instance": GoogleNewsService("燕云十六声"),
             "history_key": "last_google_news_time",
             "color": 16750848 # 17173 Orange
+        },
+        {
+            "name": "NetEase Dashen",
+            "instance": DashenService("c47870f2c5f142a58ea746fbc4655165"),
+            "history_key": "last_dashen_time",
+            "color": 15484743 # Dashen Red
         }
     ]
 
