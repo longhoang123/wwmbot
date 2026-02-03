@@ -25,5 +25,13 @@ Vì lý do bảo mật, chúng ta không lưu `WEBHOOK_URL` trực tiếp trong 
 ## Lưu ý về History
 Workflow này đã được cấu hình để tự động ghi lại lịch sử các tin đã gửi vào file `data/history.json` và push ngược lại lên repository. Điều này giúp bot không gửi lặp lại các tin cũ.
 
+## Khắc phục lỗi 403 (Permission Denied)
+Nếu bạn gặp lỗi "Permission denied" hoặc "403" khi bot cố gắng push history:
+1. Vào tab **Settings** của repository.
+2. Chọn **Actions** -> **General**.
+3. Cuộn xuống mục **Workflow permissions**.
+4. Chọn **Read and write permissions**.
+5. Bấm **Save**.
+
 ---
 *Bot sẽ tự động quét tin mới mỗi 15 phút kể từ khi bạn hoàn thành các bước trên.*
