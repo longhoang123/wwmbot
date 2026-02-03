@@ -93,19 +93,20 @@ def main():
             if new_posts:
                 print(f"Found {len(new_posts)} new posts from {svc['name']}.")
                 for post in new_posts:
-                    # Translate only the title
+                    # Translate title and description
                     title_vn = translator.translate(post['title'], dest='vi', src='zh-cn')
                     
-                    # Original text: only take the first few lines (~300 characters)
                     full_text = post.get('text', '')
-                    lines = full_text.split('\n')
-                    # Get first 3 non-empty lines for a cleaner look
-                    preview_lines = [l.strip() for l in lines if l.strip()][:3]
-                    description = "\n".join(preview_lines)
-                    if len(description) > 300:
-                        description = f"{description[:300]}..."
+                    description_vn = ""
+                    if full_text:
+                        # Translate full text
+                        description_vn = translator.translate(full_text, dest='vi', src='zh-cn')
+                        
+                    # Format description for Discord (limit to ~1000 chars to be safe)
+                    if len(description_vn) > 1000:
+                        description_vn = f"{description_vn[:997]}..."
                     
-                    description += f"\n\n[Xem thêm trên {svc['name']}]({post['link']})"
+                    description = f"{description_vn}\n\n[Xem thêm trên {svc['name']}]({post['link']})"
 
                     embed = {
                         "title": title_vn[:256],
