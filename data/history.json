@@ -3,5 +3,19 @@
     "last_google_news_time": 1770621270.0,
     "last_dashen_time": 1770517157,
     "last_reddit_wherewindsmeet_time": 1770610791.0,
-    "last_reddit_wherewindsmeet_alt_time": 1770617307.0
+    "last_reddit_wherewindsmeet_alt_time": 1770617307.0,
+    "seen_reddit_wherewindsmeet_ids": [
+        "1qz6qco",
+        "1qza5wj",
+        "1qza9zu",
+        "1qzfm7x",
+        "1qzunhe"
+    ],
+    "seen_reddit_wherewindsmeet_alt_ids": [
+        "1qz4bqw",
+        "1qz5ki5",
+        "1qzd6q8",
+        "1qzintk",
+        "1qzug5o"
+    ]
 }
