@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 from services.googlenews import GoogleNewsService
 from services.official import OfficialService
 from services.dashen import DashenService
+from services.reddit import RedditService
 from services.translator import TranslationService
 from datetime import datetime
 
@@ -78,6 +79,18 @@ def main():
             "instance": DashenService("c47870f2c5f142a58ea746fbc4655165"),
             "history_key": "last_dashen_time",
             "color": 15484743 # Dashen Red
+        },
+        {
+            "name": "Reddit r/WhereWindsMeet",
+            "instance": RedditService("WhereWindsMeet", post_limit=5),
+            "history_key": "last_reddit_wherewindsmeet_time",
+            "color": 16729344 # Reddit Orange
+        },
+        {
+            "name": "Reddit r/wherewindsmeet_",
+            "instance": RedditService("wherewindsmeet_", post_limit=5),
+            "history_key": "last_reddit_wherewindsmeet_alt_time",
+            "color": 16729344 # Reddit Orange
         }
     ]
 
