@@ -28,7 +28,13 @@ class RedditService:
         print(f"Checking Reddit r/{self.subreddit}")
         
         headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36"
+            "User-Agent": "WhereWindsMeetBot/1.0 (by /u/YourRedditUsername)",  # Replace with your Reddit username
+            "Accept": "application/json",
+            "Accept-Language": "en-US,en;q=0.9",
+            "Accept-Encoding": "gzip, deflate, br",
+            "DNT": "1",
+            "Connection": "keep-alive",
+            "Upgrade-Insecure-Requests": "1"
         }
         
         params = {
