@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 from services.googlenews import GoogleNewsService
 from services.official import OfficialService
 from services.dashen import DashenService
-from services.reddit import RedditService
+from services.reddit_rss import RedditRSSService as RedditService
 from services.translator import TranslationService
 from datetime import datetime
 

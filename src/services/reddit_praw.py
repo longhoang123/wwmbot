@@ -1,5 +1,6 @@
 import praw
 import time
+import os
 from datetime import datetime
 
 class RedditServicePRAW:
@@ -12,32 +13,43 @@ class RedditServicePRAW:
             post_limit: Number of hot posts to fetch (default: 5)
             
         Note:
-            You need to set up Reddit API credentials:
+            Requires environment variables:
+            - REDDIT_CLIENT_ID: Your Reddit app client ID
+            - REDDIT_CLIENT_SECRET: Your Reddit app client secret
+            - REDDIT_USER_AGENT: Your bot's user agent string
+            
+            To create a Reddit app:
             1. Go to https://www.reddit.com/prefs/apps
             2. Click "Create App" or "Create Another App"
             3. Fill in the form:
                - Name: WhereWindsMeetBot
                - App type: script
                - Description: Bot to monitor Where Winds Meet subreddit
-               - About URL: (leave blank)
                - Redirect URI: http://localhost:8080
             4. Save the client_id and client_secret
-            5. Set environment variables or update this code with your credentials
         """
         self.subreddit = subreddit
         self.post_limit = post_limit
         
+        # Load credentials from environment variables
+        client_id = os.getenv("REDDIT_CLIENT_ID")
+        client_secret = os.getenv("REDDIT_CLIENT_SECRET")
+        user_agent = os.getenv("REDDIT_USER_AGENT", "WhereWindsMeetBot/1.0")
+        
+        # Validate credentials
+        if not client_id or not client_secret:
+            raise ValueError(
+                "Reddit API credentials not found. Please set REDDIT_CLIENT_ID and "
+                "REDDIT_CLIENT_SECRET environment variables. "
+                "See REDDIT_SETUP.md for instructions."
+            )
+        
         # Initialize Reddit instance
-        # TODO: Replace these with your actual credentials or use environment variables
-        # You can also use a praw.ini file for configuration
         try:
             self.reddit = praw.Reddit(
-                client_id="YOUR_CLIENT_ID",          # From Reddit app page
-                client_secret="YOUR_CLIENT_SECRET",  # From Reddit app page
-                user_agent="WhereWindsMeetBot/1.0 (by /u/YourRedditUsername)",
-                # Optional: If you want to post/comment, add username and password
-                # username="your_reddit_username",
-                # password="your_reddit_password"
+                client_id=client_id,
+                client_secret=client_secret,
+                user_agent=user_agent
             )
             self.reddit.read_only = True  # We only need to read, not post
         except Exception as e:

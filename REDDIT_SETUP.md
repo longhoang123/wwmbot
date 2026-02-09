@@ -91,6 +91,80 @@ self.reddit = praw.Reddit(
 )
 ```
 
+## GitHub Actions Setup (REQUIRED)
+
+To make this work in GitHub Actions, you need to add your Reddit credentials as GitHub Secrets:
+
+### Step 1: Add Secrets to GitHub Repository
+
+1. Go to your GitHub repository
+2. Click **Settings** (top navigation)
+3. In the left sidebar, click **Secrets and variables** → **Actions**
+4. Click **New repository secret**
+5. Add the following three secrets:
+
+   **Secret 1:**
+   - Name: `REDDIT_CLIENT_ID`
+   - Value: Your client ID from the Reddit app (the string under "personal use script")
+   
+   **Secret 2:**
+   - Name: `REDDIT_CLIENT_SECRET`
+   - Value: Your client secret from the Reddit app (the "secret" string)
+   
+   **Secret 3:**
+   - Name: `REDDIT_USER_AGENT`
+   - Value: `WhereWindsMeetBot/1.0 (by /u/YourRedditUsername)` (replace with your Reddit username)
+
+### Step 2: Verify Workflow Configuration
+
+The workflow file `.github/workflows/daily_check.yml` has already been updated to use these secrets:
+
+```yaml
+- name: Run Monitor Script
+  env:
+    WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
+    REDDIT_CLIENT_ID: ${{ secrets.REDDIT_CLIENT_ID }}
+    REDDIT_CLIENT_SECRET: ${{ secrets.REDDIT_CLIENT_SECRET }}
+    REDDIT_USER_AGENT: ${{ secrets.REDDIT_USER_AGENT }}
+  run: python src/monitor.py
+```
+
+### Step 3: Test GitHub Actions
+
+1. Go to the **Actions** tab in your repository
+2. Click on **WWM Bot Check** workflow
+3. Click **Run workflow** → **Run workflow** (to manually trigger)
+4. Wait for the workflow to complete
+5. Check the logs to verify Reddit posts are being fetched without 403 errors
+
+## Local Testing with Environment Variables
+
+To test locally before pushing to GitHub:
+
+**Windows PowerShell:**
+```powershell
+$env:REDDIT_CLIENT_ID="your_client_id"
+$env:REDDIT_CLIENT_SECRET="your_client_secret"
+$env:REDDIT_USER_AGENT="WhereWindsMeetBot/1.0 (by /u/YourUsername)"
+python src/monitor.py
+```
+
+**Windows Command Prompt:**
+```cmd
+set REDDIT_CLIENT_ID=your_client_id
+set REDDIT_CLIENT_SECRET=your_client_secret
+set REDDIT_USER_AGENT=WhereWindsMeetBot/1.0 (by /u/YourUsername)
+python src/monitor.py
+```
+
+**Linux/Mac:**
+```bash
+export REDDIT_CLIENT_ID="your_client_id"
+export REDDIT_CLIENT_SECRET="your_client_secret"
+export REDDIT_USER_AGENT="WhereWindsMeetBot/1.0 (by /u/YourUsername)"
+python src/monitor.py
+```
+
 ## Why This Happens
 
 Reddit has tightened API access to:
@@ -100,3 +174,17 @@ Reddit has tightened API access to:
 - Comply with data protection regulations
 
 The official PRAW library handles authentication, rate limiting, and retries automatically.
+
+## Current Implementation Status
+
+✅ **Completed:**
+- Added `praw` to `requirements.txt`
+- Updated `reddit_praw.py` to use environment variables
+- Switched `monitor.py` to use `RedditServicePRAW`
+- Updated GitHub Actions workflow to pass credentials
+
+⚠️ **Required by User:**
+- Create Reddit app at https://www.reddit.com/prefs/apps
+- Add three GitHub Secrets (REDDIT_CLIENT_ID, REDDIT_CLIENT_SECRET, REDDIT_USER_AGENT)
+- Install praw locally: `pip install -r requirements.txt`
+
