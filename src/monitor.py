@@ -83,13 +83,15 @@ def main():
         {
             "name": "Reddit r/WhereWindsMeet",
             "instance": RedditService("WhereWindsMeet", post_limit=5),
-            "history_key": "last_reddit_wherewindsmeet_time",
+            "history_key": "seen_reddit_wherewindsmeet_ids",
+            "history_type": "ids",
             "color": 16729344 # Reddit Orange
         },
         {
             "name": "Reddit r/wherewindsmeet_",
             "instance": RedditService("wherewindsmeet_", post_limit=5),
-            "history_key": "last_reddit_wherewindsmeet_alt_time",
+            "history_key": "seen_reddit_wherewindsmeet_alt_ids",
+            "history_type": "ids",
             "color": 16729344 # Reddit Orange
         }
     ]
@@ -97,9 +99,21 @@ def main():
     for svc in services_to_check:
         try:
             print(f"--- Checking {svc['name']} ---")
-            # Default to 24h ago to avoid spam on first run if history is empty
-            default_time = time.time() - 86400
-            last_check = history.get(svc['history_key'], default_time)
+            # Determine default based on history type
+            history_type = svc.get('history_type', 'timestamp')
+            
+            if history_type == 'ids':
+                default_val = []
+                last_check = history.get(svc['history_key'], default_val)
+                # Ensure it's a list (in case of corruption or type change)
+                if not isinstance(last_check, list):
+                    last_check = []
+            else:
+                default_val = time.time() - 86400
+                last_check = history.get(svc['history_key'], default_val)
+                # Ensure it's a float
+                if not isinstance(last_check, (int, float)):
+                    last_check = default_val
             
             new_posts = svc['instance'].get_new_posts(last_check)
             
@@ -133,7 +147,16 @@ def main():
                     send_discord_webhook(WEBHOOK_URL, embed=embed)
                     
                     # Update local history
-                    history[svc['history_key']] = post['timestamp']
+                    if history_type == 'ids':
+                        if svc['history_key'] not in history or not isinstance(history[svc['history_key']], list):
+                            history[svc['history_key']] = []
+                        history[svc['history_key']].append(post['post_id'])
+                        
+                        # Limit to last 50 IDs to prevent unlimited growth
+                        if len(history[svc['history_key']]) > 50:
+                            history[svc['history_key']] = history[svc['history_key']][-50:]
+                    else:
+                        history[svc['history_key']] = post['timestamp']
                 
                 save_history(history)
             else:

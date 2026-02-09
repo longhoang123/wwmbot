@@ -15,22 +15,33 @@ class RedditRSSService:
         """
         self.subreddit = subreddit
         self.post_limit = post_limit
-        # Use simple .rss URL which is often more permissive
-        self.rss_url = f"https://www.reddit.com/r/{subreddit}/hot/.rss"
+        # Use /top/.rss?t=day to get the highest upvoted posts of the day
+        # This prioritizes high upvote counts as requested
+        self.rss_url = f"https://www.reddit.com/r/{subreddit}/top/.rss?t=day&limit={post_limit}"
         
-    def get_new_posts(self, last_check_timestamp):
+    def get_new_posts(self, last_check):
         """
         Fetch new hot posts from the subreddit using RSS feed.
         
         Args:
-            last_check_timestamp: Unix timestamp of last check
+            last_check: Unix timestamp (float) OR list of seen post IDs
             
         Returns:
             List of new posts with title, link, text, timestamp, and author
         """
         print(f"Checking Reddit r/{self.subreddit} via RSS")
         
+        # Determine strict mode (timestamp) vs dedup mode (ids)
+        seen_ids = set()
+        min_timestamp = 0
+        
+        if isinstance(last_check, list):
+            seen_ids = set(last_check)
+        else:
+            min_timestamp = float(last_check)
+            
         try:
+        # ... logic ...
             # Add random user agent to avoid simple blocking
             headers = {
                 'User-Agent': f'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/{random.randint(100, 120)}.0.0.0 Safari/537.36'
@@ -59,11 +70,25 @@ class RedditRSSService:
                 # Parse timestamp
                 published_time = time.mktime(entry.published_parsed) if hasattr(entry, 'published_parsed') else time.time()
                 
-                # Check if post is newer than last check
-                if published_time > last_check_timestamp:
+                # Extract link and ID
+                link = entry.get('link', '')
+                post_id = link.split('/comments/')[-1].split('/')[0] if '/comments/' in link else link
+                
+                is_new = False
+                
+                # Check if new based on mode
+                if seen_ids:
+                    # ID mode: New if ID not in seen list
+                    if post_id and post_id not in seen_ids:
+                        is_new = True
+                else:
+                    # Timestamp mode: New if newer than last check
+                    if published_time > min_timestamp:
+                        is_new = True
+                
+                if is_new:
                     # Extract information
                     title = entry.get('title', 'No Title')
-                    link = entry.get('link', '')
                     author = entry.get('author', 'Unknown')
                     
                     # Get content
@@ -85,8 +110,6 @@ class RedditRSSService:
                     if len(text_content) > 500:
                         text_content = text_content[:497] + "..."
                     
-                    # Extract post ID from link
-                    post_id = link.split('/comments/')[-1].split('/')[0] if '/comments/' in link else ''
                     
                     new_posts.append({
                         'title': title,
