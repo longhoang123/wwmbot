@@ -29,32 +29,35 @@ def save_history(data):
     with open(HISTORY_FILE, 'w') as f:
         json.dump(data, f, indent=4)
 
-def send_discord_webhook(webhook_url, content=None, embed=None):
-    if not webhook_url:
-        print("No Webhook URL provided.")
+def send_telegram_message(bot_token, chat_id, text):
+    if not bot_token or not chat_id:
+        print("Missing Telegram Bot Token or Chat ID.")
         return
 
-    data = {}
-    if content:
-        data["content"] = content
-    if embed:
-        data["embeds"] = [embed]
+    url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
+    data = {
+        "chat_id": chat_id,
+        "text": text,
+        "parse_mode": "HTML",
+        "disable_web_page_preview": False
+    }
 
     try:
-        response = requests.post(webhook_url, json=data)
-        if response.status_code == 204:
-            print("Webhook sent successfully.")
+        response = requests.post(url, json=data)
+        if response.status_code == 200:
+            print("Telegram message sent successfully.")
         else:
-            print(f"Webhook failed: {response.status_code} - {response.text}")
+            print(f"Telegram failed: {response.status_code} - {response.text}")
     except Exception as e:
-        print(f"Webhook exception: {e}")
+        print(f"Telegram exception: {e}")
 
 def main():
     # Configuration
-    WEBHOOK_URL = os.getenv('WEBHOOK_URL')
+    TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
+    TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
 
-    if not WEBHOOK_URL:
-        print("Missing WEBHOOK_URL in environment. Please check .env file.")
+    if not TELEGRAM_BOT_TOKEN or not TELEGRAM_CHAT_ID:
+        print("Missing TELEGRAM_BOT_TOKEN or TELEGRAM_CHAT_ID in environment. Please check .env file.")
         return
 
     history = load_history()
@@ -129,22 +132,15 @@ def main():
                         # Translate full text
                         description_vn = translator.translate(full_text, dest='vi', src='zh-cn')
                         
-                    # Format description for Discord (limit to ~1000 chars to be safe)
-                    if len(description_vn) > 1000:
-                        description_vn = f"{description_vn[:997]}..."
+                    # Format description for Telegram (limit to ~4000 chars to be safe)
+                    if len(description_vn) > 3000:
+                        description_vn = f"{description_vn[:2997]}..."
                     
-                    description = f"{description_vn}\n\n[Xem thêm trên {svc['name']}]({post['link']})"
+                    description = f"{description_vn}\n\n<a href='{post['link']}'>Xem thêm trên {svc['name']}</a>"
 
-                    embed = {
-                        "title": title_vn[:256],
-                        "description": description,
-                        "url": post['link'],
-                        "color": svc.get("color", 3447003),
-                        "timestamp": datetime.fromtimestamp(post['timestamp']).isoformat(),
-                        "footer": {"text": f"Nguồn: {post['author']}"}
-                    }
+                    telegram_text = f"<b>{title_vn[:256]}</b>\n\n{description}\n\n<i>Nguồn: {post['author']}</i>"
                     
-                    send_discord_webhook(WEBHOOK_URL, embed=embed)
+                    send_telegram_message(TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID, telegram_text)
                     
                     # Update local history
                     if history_type == 'ids':

@@ -122,7 +122,8 @@ The workflow file `.github/workflows/daily_check.yml` has already been updated t
 ```yaml
 - name: Run Monitor Script
   env:
-    WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
+    TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+    TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
     REDDIT_CLIENT_ID: ${{ secrets.REDDIT_CLIENT_ID }}
     REDDIT_CLIENT_SECRET: ${{ secrets.REDDIT_CLIENT_SECRET }}
     REDDIT_USER_AGENT: ${{ secrets.REDDIT_USER_AGENT }}
