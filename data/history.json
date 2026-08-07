@@ -1,12 +1,10 @@
 {
-    "last_official_time": 1786075321.0,
+    "last_official_time": 1786075324.0,
     "last_google_news_time": 1785720467.0,
     "last_dashen_time": 1786038381,
     "last_reddit_wherewindsmeet_time": 1770610791.0,
     "last_reddit_wherewindsmeet_alt_time": 1770617307.0,
     "seen_reddit_wherewindsmeet_ids": [
-        "1vcg3pl",
-        "1vcgmwx",
         "1vcy0ok",
         "1vczrpu",
         "1vd34tt",
@@ -54,14 +52,11 @@
         "1vh5ebf",
         "1vhjw8x",
         "1vhun21",
-        "1vhwgjz"
+        "1vhwgjz",
+        "1vhwfpg",
+        "1vhwkkc"
     ],
     "seen_reddit_wherewindsmeet_alt_ids": [
-        "1v1l7ce",
-        "1v1suss",
-        "1v22xu6",
-        "1v27xoa",
-        "1v296hi",
         "1v2fo4v",
         "1v2hgme",
         "1v2edl7",
@@ -106,6 +101,11 @@
         "1vgzsli",
         "1vgzvfr",
         "1vh2wma",
-        "1vh59q3"
+        "1vh59q3",
+        "1vhm6rj",
+        "1vhmaur",
+        "1vhnwtd",
+        "1vhuywy",
+        "1vhwkjv"
     ]
 }
